@@ -21,19 +21,19 @@
 
 (defun current-process ()
   "Return the object representing the current process"
-  (bt:current-thread))
+  (bt2:current-thread))
 
 (defun kill-process (process)
   "Kill the process represented by the object process"
-  (bt:destroy-thread process))
+  (bt2:destroy-thread process))
 
 (defun run-process (name function &rest arguments)
   "Create and run a new process with name, executing function on arguments"
-  (bt:make-thread #'(lambda () (apply function arguments)) :name name))
+  (bt2:make-thread #'(lambda () (apply function arguments)) :name name))
 
 (defun all-processes ()
   "Return a list of all processes currently running"
-  (bt:all-threads))
+  (bt2:all-threads))
 
 ;; opening a client TCP/IP socket stream
 
@@ -75,19 +75,19 @@
 
 (defun stop-process (name)
   "Stop a named process by destroying it"
-  (let ((thread (find name (bt:all-threads) :key #'bt:thread-name :test #'equal)))
+  (let ((thread (find name (bt2:all-threads) :key #'bt2:thread-name :test #'equal)))
     (when thread
-      (bt:destroy-thread thread)
+      (bt2:destroy-thread thread)
       name)))
 
 ;; working with process locks
 
 (defun make-process-lock (name)
   "Create a named process lock object"
-  (bt:make-recursive-lock name))
+  (bt2:make-recursive-lock :name name))
 
 (defmacro with-process-lock ((lock) &body body)
   "Execute body wih the process lock grabbed, wait otherwise"
-  `(bt:with-recursive-lock-held (,lock) ,@body))
+  `(bt2:with-recursive-lock-held (,lock) ,@body))
 
 ;;;; eof
